@@ -7,19 +7,25 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
   <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
     //alternate between showing form and table, for when user inserts a new row with classmate info
     function showForm() {
       document.getElementById("form-container").style.display = "block";
       document.getElementById("table-container").style.display = "none";
       document.getElementById("judgement-container").style.display = "none";
+      document.getElementById("chart_div").style.display = "none";
     }
 
     function showTable() {
       document.getElementById("form-container").style.display = "none";
       document.getElementById("table-container").style.display = "block";
       document.getElementById("judgement-container").style.display = "block";
+      document.getElementById("chart_div").style.display = "block";
     }
 
     // add new row with classmate info
@@ -62,6 +68,7 @@
       deleteButton.onclick = function() 
       {
         row.remove();
+        drawChart();
       };
       deleteCell.appendChild(deleteButton);
       // clear form, hide form, and bring table back
@@ -69,6 +76,7 @@
       showTable();
     }
 
+    //
     function display_chosen_option() {
       // hole is here
 
@@ -84,7 +92,46 @@
       }
 
     }
+    /**
+     * draws a chart based on the image in the first cell. 
+     * Called whenever a cell is deleted or whenever the vampire are recalculated
+     */
+    function drawChart() {
+      var table = document.getElementById("saving_table");
+      var vampireCount = 0;
+      var humanCount = 0;
 
+      for (var i = 1, row; row = table.rows[i]; i++) {
+        var img = row.cells[0].getElementsByTagName('img')[0].src;
+        if (img.includes("vampire.jpg")) {
+          vampireCount++;
+        } else {
+          humanCount++;
+        }
+      }
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Type');
+      data.addColumn('number', 'Count');
+      data.addRows([
+        ['Vampire', vampireCount],
+        ['Human', humanCount]
+      ]);
+
+      var options = {
+        'title': 'How many vampires in the class?',
+        'width': 400,
+        'height': 300,
+        'colors': ['red', 'blue']
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+
+    /**
+     * iterates through all rows in the table and updates the image
+     * in the first cell based on the method the user selected.
+     */
     function calculate_vampire(selection) {
       var table = document.getElementById("saving_table");
       for (var i = 1, row; row = table.rows[i]; i++) {
@@ -96,18 +143,23 @@
 
         // threshold based method
         else if (selection == 1) {
-            var shadow = row.cells[5].innerHTML === 'No' ? 4 : 0;
+            var garlic = row.cells[6].innerHTML === 'No' ? 0 : 3;
+            var shadow = row.cells[5].innerHTML === 'No' ? 0 : 4;
             var complexion = row.cells[7].innerHTML === 'Pale' ? 3 : 0;
-            var garlic = row.cells[6].innerHTML === 'No' ? 3 : 0;
-            var decision = ((shadow + complexion + garlic) > 6) ? "Vampire" : "Human";
+            var decision = ((garlic + shadow + complexion) > 6) ? "Vampire" : "Human";
+            console.log(row.cells[1].innerHTML + " " + garlic + shadow + complexion);
         }
         if (decision === "Vampire") {
           row.cells[0].getElementsByTagName('img')[0].src = "vampire.jpg";
         }
-        console.log(garlic + complexion + shadow);
-        console.log(decision);
+        else {
+          row.cells[0].getElementsByTagName('img')[0].src = "human.png";
+        }
+        console.log(row.cells[1].innerHTML + " is a " + decision);
 
       }   
+      //update the chart
+      drawChart();
     }
   </script>
 
@@ -153,6 +205,7 @@
     </div>
   
   </div>
+  <div id="chart_div"></div>
 
   <!-- Form Section (Initially Hidden) -->
   <div id="form-container" style="display: none;">
