@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Classmate Management</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript">
+    //alternate between showing form and table, for when user inserts a new row with classmate info
+    function showForm() {
+      document.getElementById("form-container").style.display = "block";
+      document.getElementById("table-container").style.display = "none";
+    }
+
+    function showTable() {
+      document.getElementById("form-container").style.display = "none";
+      document.getElementById("table-container").style.display = "block";
+    }
+
+    // add new row with classmate info
+    function addClassmate() {
+      const firstName = document.getElementById('first_name').value;
+      const middleName = document.getElementById('middle_name').value;
+      const lastName = document.getElementById('last_name').value;
+      const comment = document.getElementById('comment').value;
+      const garlicChecked = document.getElementById('galic_checkbox').checked ? 'Yes' : 'No';
+      const shadowChecked = document.getElementById('shadow_checkbox').checked ? 'Yes' : 'No';
+      const complexion = document.getElementById('complexion').value;
+
+      // add row to end of table
+      var table = document.getElementById("saving_table");
+      var row = table.insertRow(-1);
+
+      // cell for human image
+      var imgCell = row.insertCell(0);
+      var img = document.createElement("img");
+      img.src = "human.png"; 
+      img.alt = "Human";
+      img.style.width = "50px"; 
+      img.style.height = "50px";
+      imgCell.appendChild(img);
+
+      //cells for classmate data
+      row.insertCell(1).innerHTML = firstName || "Mystery person";
+      row.insertCell(2).innerHTML = middleName || "None";
+      row.insertCell(3).innerHTML = lastName || "None";
+      row.insertCell(4).innerHTML = comment || "None";
+      row.insertCell(5).innerHTML = garlicChecked;
+      row.insertCell(6).innerHTML = shadowChecked;
+      row.insertCell(7).innerHTML = complexion;
+
+      //cell with delete button
+      var deleteCell = row.insertCell(8);
+      var deleteButton = document.createElement("button");
+      deleteButton.className = "btn btn-danger";
+      deleteButton.innerHTML = "Delete";
+      deleteButton.onclick = function() 
+      {
+        row.remove();
+      };
+      deleteCell.appendChild(deleteButton);
+      // clear form, hide form, and bring table back
+      document.getElementById("classmate-form").reset();
+      showTable();
+    }
+  </script>
+
+</head>
+<body>
+
+<div class="container">
+  <!-- Table Section -->
+  <div id="table-container">
+    <h2>Classmates</h2>
+    <table class="table table-bordered" id="saving_table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>First Name</th>
+          <th>Middle Name</th>
+          <th>Last Name</th>
+          <th>Additional Info</th>
+          <th>Garlic?</th>
+          <th>Shadow?</th>
+          <th>Complexion</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+    </table>
+    <button class="btn btn-primary" onclick="showForm()">Insert a Row</button>
+  </div>
+
+  <!-- Form Section (Initially Hidden) -->
+  <div id="form-container" style="display: none;">
+    <h2>Enter Classmate Information</h2>
+    <form id="classmate-form">
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="first_name">First Name</label>
+          <input type="text" class="form-control" id="first_name" placeholder="First Name">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="middle_name">Middle Name</label>
+          <input type="text" class="form-control" id="middle_name" placeholder="Middle Name">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="last_name">Last Name</label>
+          <input type="text" class="form-control" id="last_name" placeholder="Last Name">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <div class="radio">
+            <label><input type="radio" name="optradio" id="male_radio" checked>Male</label>
+          </div>
+          <div class="radio">
+            <label><input type="radio" name="optradio" id="female_radio">Female</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <div class="checkbox">
+            <label><input type="checkbox" id="galic_checkbox">Garlic</label>
+          </div>
+          <div class="checkbox">
+            <label><input type="checkbox" id="shadow_checkbox">Shadow</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <label for="complexion">Complexion</label>
+          <select class="form-control" id="complexion">
+            <option value="Light" selected>Light</option>
+            <option value="Dark">Dark</option>
+            <option value="Pale">Pale</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <label for="comment">Comment:</label>
+          <textarea class="form-control" rows="5" id="comment"></textarea>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-success" onclick="addClassmate()">Submit</button>
+      <button type="button" class="btn btn-secondary" onclick="showTable()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
