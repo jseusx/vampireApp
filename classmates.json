@@ -1,0 +1,30 @@
+[
+    {
+      "firstName": "John",
+      "middleName": "A.",
+      "lastName": "Doe",
+      "comment": "Prefers night classes.",
+      "garlic": "No",
+      "shadow": "No",
+      "complexion": "Pale"
+    },
+    {
+      "firstName": "Lee",
+      "middleName": "B.",
+      "lastName": "Kim",
+      "comment": "Loves history.",
+      "garlic": "No",
+      "shadow": "Yes",
+      "complexion": "Pale"
+    },
+    {
+      "firstName": "Emma",
+      "middleName": "C.",
+      "lastName": "Smith",
+      "comment": "Allergic to garlic.",
+      "garlic": "Yes",
+      "shadow": "No",
+      "complexion": "Brown"
+    }
+  ]
+  
