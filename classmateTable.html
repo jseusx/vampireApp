@@ -13,11 +13,13 @@
     function showForm() {
       document.getElementById("form-container").style.display = "block";
       document.getElementById("table-container").style.display = "none";
+      document.getElementById("judgement-container").style.display = "none";
     }
 
     function showTable() {
       document.getElementById("form-container").style.display = "none";
       document.getElementById("table-container").style.display = "block";
+      document.getElementById("judgement-container").style.display = "block";
     }
 
     // add new row with classmate info
@@ -66,6 +68,47 @@
       document.getElementById("classmate-form").reset();
       showTable();
     }
+
+    function display_chosen_option() {
+      // hole is here
+
+      var x = document.getElementById("mySelect").selectedIndex;
+
+      if (x == 0 || x == 1) {
+        calculate_vampire(x);
+        
+      } 
+     
+      else {
+        alert("One of the options must be selected.");
+      }
+
+    }
+
+    function calculate_vampire(selection) {
+      var table = document.getElementById("saving_table");
+      for (var i = 1, row; row = table.rows[i]; i++) {
+
+        // random guess
+        if (selection == 0) {
+            var decision = (Math.random() > 0.5) ? "Vampire" : "Human";
+        }
+
+        // threshold based method
+        else if (selection == 1) {
+            var shadow = row.cells[5].innerHTML === 'No' ? 4 : 0;
+            var complexion = row.cells[7].innerHTML === 'Pale' ? 3 : 0;
+            var garlic = row.cells[6].innerHTML === 'No' ? 3 : 0;
+            var decision = ((shadow + complexion + garlic) > 6) ? "Vampire" : "Human";
+        }
+        if (decision === "Vampire") {
+          row.cells[0].getElementsByTagName('img')[0].src = "vampire.jpg";
+        }
+        console.log(garlic + complexion + shadow);
+        console.log(decision);
+
+      }   
+    }
   </script>
 
 </head>
@@ -91,6 +134,24 @@
       </thead>
     </table>
     <button class="btn btn-primary" onclick="showForm()">Insert a Row</button>
+  </div>
+
+  <div class="container" id = "judgement-container">
+    <h2>Judgement Time!</h2>
+  
+    <div class="form-group">
+      <label for="mySelect">Select judgement method:</label>
+      <select class="form-control" id="mySelect">
+        <option value='1'>Random Guess</option>
+        <option value='2'>Threshold Based</option>
+      </select>   
+  
+      <!-- write a function to display chosen option with a pop up window. -->
+      <button type="button" onclick="display_chosen_option()">Calculate Vampire</button>
+  
+      <button type="button" onclick="document.getElementById('mySelect').selectedIndex = '-1'">Clear selection</button>    
+    </div>
+  
   </div>
 
   <!-- Form Section (Initially Hidden) -->
