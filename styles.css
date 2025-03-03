@@ -1,0 +1,14 @@
+body {
+    background-color: black;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+.team-member {
+    margin: 20px 0;
+}
+.next-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
