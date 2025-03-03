@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Classmate Management</title>
   <meta charset="utf-8">
@@ -10,7 +11,40 @@
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
   <script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
+    let classmates = [];
+
+    // Load initial data from JSON file
+    $(document).ready(function () {
+      fetch("classmates.json")
+        .then(response => response.json())
+        .then(data => {
+          classmates = data;
+          updateTable();
+        })
+        .catch(error => console.error("Error loading JSON:", error));
+    });
+
+    // Function to update the table
+    function updateTable() {
+      let table = document.getElementById("saving_table").getElementsByTagName('tbody')[0];
+      table.innerHTML = ""; // Clear table before updating
+
+      classmates.forEach((c, index) => {
+        let row = table.insertRow();
+        row.insertCell(0).innerHTML = `<img src="human.png" alt="Human" width="50px" height="50px">`;
+        row.insertCell(1).innerHTML = c.firstName || "Unknown";
+        row.insertCell(2).innerHTML = c.middleName || "N/A";
+        row.insertCell(3).innerHTML = c.lastName || "N/A";
+        row.insertCell(4).innerHTML = c.comment || "No Comment";
+        row.insertCell(5).innerHTML = c.garlic;
+        row.insertCell(6).innerHTML = c.shadow;
+        row.insertCell(7).innerHTML = c.complexion;
+        row.insertCell(8).innerHTML = `<button class="btn btn-danger" onclick="removeClassmate(${index})">Delete</button>`;
+      });
+    }
+
+
+    google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(drawChart);
 
     //alternate between showing form and table, for when user inserts a new row with classmate info
@@ -30,52 +64,50 @@
 
     // add new row with classmate info
     function addClassmate() {
-      const firstName = document.getElementById('first_name').value;
-      const middleName = document.getElementById('middle_name').value;
-      const lastName = document.getElementById('last_name').value;
-      const comment = document.getElementById('comment').value;
-      const garlicChecked = document.getElementById('galic_checkbox').checked ? 'Yes' : 'No';
-      const shadowChecked = document.getElementById('shadow_checkbox').checked ? 'Yes' : 'No';
-      const complexion = document.getElementById('complexion').value;
+      let firstName = document.getElementById('first_name').value;
+      let middleName = document.getElementById('middle_name').value;
+      let lastName = document.getElementById('last_name').value;
+      let comment = document.getElementById('comment').value;
+      let garlicChecked = document.getElementById('galic_checkbox').checked ? 'Yes' : 'No';
+      let shadowChecked = document.getElementById('shadow_checkbox').checked ? 'Yes' : 'No';
+      let complexion = document.getElementById('complexion').value;
 
-      // add row to end of table
-      var table = document.getElementById("saving_table");
-      var row = table.insertRow(-1);
-
-      // cell for human image
-      var imgCell = row.insertCell(0);
-      var img = document.createElement("img");
-      img.src = "human.png"; 
-      img.alt = "Human";
-      img.style.width = "50px"; 
-      img.style.height = "50px";
-      imgCell.appendChild(img);
-
-      //cells for classmate data
-      row.insertCell(1).innerHTML = firstName || "Mystery person";
-      row.insertCell(2).innerHTML = middleName || "None";
-      row.insertCell(3).innerHTML = lastName || "None";
-      row.insertCell(4).innerHTML = comment || "None";
-      row.insertCell(5).innerHTML = garlicChecked;
-      row.insertCell(6).innerHTML = shadowChecked;
-      row.insertCell(7).innerHTML = complexion;
-
-      //cell with delete button
-      var deleteCell = row.insertCell(8);
-      var deleteButton = document.createElement("button");
-      deleteButton.className = "btn btn-danger";
-      deleteButton.innerHTML = "Delete";
-      deleteButton.onclick = function() 
-      {
-        row.remove();
-        drawChart();
+      let newEntry = {
+        firstName,
+        middleName,
+        lastName,
+        comment,
+        garlic: garlicChecked,
+        shadow: shadowChecked,
+        complexion
       };
-      deleteCell.appendChild(deleteButton);
-      // clear form, hide form, and bring table back
-      document.getElementById("classmate-form").reset();
-      showTable();
+
+      classmates.push(newEntry);
+      updateTable();
+      saveData();
     }
 
+    function removeClassmate(index) {
+      classmates.splice(index, 1);
+      updateTable();
+      saveData();
+    }
+
+    // Function to save data to localStorage
+    function saveData() {
+      localStorage.setItem("classmates", JSON.stringify(classmates));
+    }
+
+    // Function to download JSON file
+    function downloadJSON() {
+      let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(classmates, null, 2));
+      let downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "classmates.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      document.body.removeChild(downloadAnchor);
+    }
     //
     function display_chosen_option() {
       // hole is here
@@ -84,9 +116,9 @@
 
       if (x == 0 || x == 1) {
         calculate_vampire(x);
-        
-      } 
-     
+
+      }
+
       else {
         alert("One of the options must be selected.");
       }
@@ -138,16 +170,16 @@
 
         // random guess
         if (selection == 0) {
-            var decision = (Math.random() > 0.5) ? "Vampire" : "Human";
+          var decision = (Math.random() > 0.5) ? "Vampire" : "Human";
         }
 
         // threshold based method
         else if (selection == 1) {
-            var garlic = row.cells[6].innerHTML === 'No' ? 0 : 3;
-            var shadow = row.cells[5].innerHTML === 'No' ? 0 : 4;
-            var complexion = row.cells[7].innerHTML === 'Pale' ? 3 : 0;
-            var decision = ((garlic + shadow + complexion) > 6) ? "Vampire" : "Human";
-            console.log(row.cells[1].innerHTML + " " + garlic + shadow + complexion);
+          var garlic = row.cells[6].innerHTML === 'No' ? 0 : 3;
+          var shadow = row.cells[5].innerHTML === 'No' ? 0 : 4;
+          var complexion = row.cells[7].innerHTML === 'Pale' ? 3 : 0;
+          var decision = ((garlic + shadow + complexion) > 6) ? "Vampire" : "Human";
+          console.log(row.cells[1].innerHTML + " " + garlic + shadow + complexion);
         }
         if (decision === "Vampire") {
           row.cells[0].getElementsByTagName('img')[0].src = "vampire.jpg";
@@ -157,120 +189,125 @@
         }
         console.log(row.cells[1].innerHTML + " is a " + decision);
 
-      }   
+      }
       //update the chart
       drawChart();
     }
   </script>
 
 </head>
+
 <body>
 
-<div class="container">
-  <!-- Table Section -->
-  <div id="table-container">
-    <h2>Classmates</h2>
-    <table class="table table-bordered" id="saving_table">
-      <thead>
-        <tr>
-          <th>Status</th>
-          <th>First Name</th>
-          <th>Middle Name</th>
-          <th>Last Name</th>
-          <th>Additional Info</th>
-          <th>Garlic?</th>
-          <th>Shadow?</th>
-          <th>Complexion</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-    </table>
-    <button class="btn btn-primary" onclick="showForm()">Insert a Row</button>
-  </div>
-
-  <div class="container" id = "judgement-container">
-    <h2>Judgement Time!</h2>
-  
-    <div class="form-group">
-      <label for="mySelect">Select judgement method:</label>
-      <select class="form-control" id="mySelect">
-        <option value='1'>Random Guess</option>
-        <option value='2'>Threshold Based</option>
-      </select>   
-  
-      <!-- write a function to display chosen option with a pop up window. -->
-      <button type="button" onclick="display_chosen_option()">Calculate Vampire</button>
-  
-      <button type="button" onclick="document.getElementById('mySelect').selectedIndex = '-1'">Clear selection</button>    
+  <div class="container">
+    <!-- Table Section -->
+    <div id="table-container">
+      <h2>Classmates</h2>
+      <table class="table table-bordered" id="saving_table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>First Name</th>
+            <th>Middle Name</th>
+            <th>Last Name</th>
+            <th>Additional Info</th>
+            <th>Garlic?</th>
+            <th>Shadow?</th>
+            <th>Complexion</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <button class="btn btn-primary" onclick="showForm()">Insert a Row</button>
     </div>
-  
+
+    <div class="container" id="judgement-container">
+      <h2>Judgement Time!</h2>
+
+      <div class="form-group">
+        <label for="mySelect">Select judgement method:</label>
+        <select class="form-control" id="mySelect">
+          <option value='1'>Random Guess</option>
+          <option value='2'>Threshold Based</option>
+        </select>
+
+        <!-- write a function to display chosen option with a pop up window. -->
+        <button type="button" onclick="display_chosen_option()">Calculate Vampire</button>
+
+        <button type="button" onclick="document.getElementById('mySelect').selectedIndex = '-1'">Clear
+          selection</button>
+      </div>
+
+    </div>
+    <div id="chart_div"></div>
+
+    <!-- Form Section (Initially Hidden) -->
+    <div id="form-container" style="display: none;">
+      <h2>Enter Classmate Information</h2>
+      <form id="classmate-form">
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="first_name">First Name</label>
+            <input type="text" class="form-control" id="first_name" placeholder="First Name">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="middle_name">Middle Name</label>
+            <input type="text" class="form-control" id="middle_name" placeholder="Middle Name">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="last_name">Last Name</label>
+            <input type="text" class="form-control" id="last_name" placeholder="Last Name">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-12">
+            <div class="radio">
+              <label><input type="radio" name="optradio" id="male_radio" checked>Male</label>
+            </div>
+            <div class="radio">
+              <label><input type="radio" name="optradio" id="female_radio">Female</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-12">
+            <div class="checkbox">
+              <label><input type="checkbox" id="galic_checkbox">Garlic</label>
+            </div>
+            <div class="checkbox">
+              <label><input type="checkbox" id="shadow_checkbox">Shadow</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-12">
+            <label for="complexion">Complexion</label>
+            <select class="form-control" id="complexion">
+              <option value="Light" selected>Light</option>
+              <option value="Dark">Dark</option>
+              <option value="Pale">Pale</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-12">
+            <label for="comment">Comment:</label>
+            <textarea class="form-control" rows="5" id="comment"></textarea>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-success" onclick="addClassmate()">Submit</button>
+        <button type="button" class="btn btn-secondary" onclick="showTable()">Cancel</button>
+      </form>
+    </div>
   </div>
-  <div id="chart_div"></div>
-
-  <!-- Form Section (Initially Hidden) -->
-  <div id="form-container" style="display: none;">
-    <h2>Enter Classmate Information</h2>
-    <form id="classmate-form">
-      <div class="form-row">
-        <div class="form-group col-md-4">
-          <label for="first_name">First Name</label>
-          <input type="text" class="form-control" id="first_name" placeholder="First Name">
-        </div>
-        <div class="form-group col-md-4">
-          <label for="middle_name">Middle Name</label>
-          <input type="text" class="form-control" id="middle_name" placeholder="Middle Name">
-        </div>
-        <div class="form-group col-md-4">
-          <label for="last_name">Last Name</label>
-          <input type="text" class="form-control" id="last_name" placeholder="Last Name">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group col-md-12">
-          <div class="radio">
-            <label><input type="radio" name="optradio" id="male_radio" checked>Male</label>
-          </div>
-          <div class="radio">
-            <label><input type="radio" name="optradio" id="female_radio">Female</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group col-md-12">
-          <div class="checkbox">
-            <label><input type="checkbox" id="galic_checkbox">Garlic</label>
-          </div>
-          <div class="checkbox">
-            <label><input type="checkbox" id="shadow_checkbox">Shadow</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group col-md-12">
-          <label for="complexion">Complexion</label>
-          <select class="form-control" id="complexion">
-            <option value="Light" selected>Light</option>
-            <option value="Dark">Dark</option>
-            <option value="Pale">Pale</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group col-md-12">
-          <label for="comment">Comment:</label>
-          <textarea class="form-control" rows="5" id="comment"></textarea>
-        </div>
-      </div>
-
-      <button type="button" class="btn btn-success" onclick="addClassmate()">Submit</button>
-      <button type="button" class="btn btn-secondary" onclick="showTable()">Cancel</button>
-    </form>
-  </div>
-</div>
 
 </body>
+
 </html>
