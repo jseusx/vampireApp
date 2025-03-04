@@ -4,11 +4,37 @@ body {
     text-align: center;
     padding: 20px;
 }
+
 .team-member {
     margin: 20px 0;
 }
+
 .next-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
+}
+
+/* Style the select box */
+#mySelect {
+    background-color: black !important;
+    color: white !important;
+}
+
+/* Style the options */
+#mySelect option {
+    background-color: black;
+    color: white;
+}
+
+.dark_button {
+    background-color: black !important;
+    color: white !important;
+    border: 1px solid white !important; /* sets a 1px thick border */
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.dark_button:hover {
+    background-color: #333;
 }
