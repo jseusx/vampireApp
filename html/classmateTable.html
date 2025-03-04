@@ -15,7 +15,7 @@
 
     // Load initial data from JSON file
     $(document).ready(function () {
-      fetch("classmates.json")
+      fetch("../json/classmates.json")
         .then(response => response.json())
         .then(data => {
           classmates = data;
@@ -31,7 +31,7 @@
 
       classmates.forEach((c, index) => {
         let row = table.insertRow();
-        row.insertCell(0).innerHTML = `<img src="human.png" alt="Human" width="50px" height="50px">`;
+        row.insertCell(0).innerHTML = `<img src="../pics/human.png" alt="Human" width="50px" height="50px">`;
         row.insertCell(1).innerHTML = c.firstName || "Unknown";
         row.insertCell(2).innerHTML = c.middleName || "N/A";
         row.insertCell(3).innerHTML = c.lastName || "N/A";
@@ -136,7 +136,7 @@
 
       for (var i = 1, row; row = table.rows[i]; i++) {
         var img = row.cells[0].getElementsByTagName('img')[0].src;
-        if (img.includes("vampire.jpg")) {
+        if (img.includes("../pics/vampire.jpg")) {
           vampireCount++;
         } else {
           humanCount++;
@@ -183,10 +183,10 @@
           console.log(row.cells[1].innerHTML + " " + garlic + shadow + complexion);
         }
         if (decision === "Vampire") {
-          row.cells[0].getElementsByTagName('img')[0].src = "vampire.jpg";
+          row.cells[0].getElementsByTagName('img')[0].src = "../pics/vampire.jpg";
         }
         else {
-          row.cells[0].getElementsByTagName('img')[0].src = "human.png";
+          row.cells[0].getElementsByTagName('img')[0].src = "../pics/human.png";
         }
         console.log(row.cells[1].innerHTML + " is a " + decision);
 
